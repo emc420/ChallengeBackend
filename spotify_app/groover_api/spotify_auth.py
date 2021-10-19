@@ -10,8 +10,8 @@ class SpotifyAuth(object):
     SPOTIFY_URL_TOKEN = "https://accounts.spotify.com/api/token/"
     RESPONSE_TYPE = "code"
     HEADER = "application/x-www-form-urlencoded"
-    CLIENT_ID = 'e18d6952d6854b6c9ab1a161a013e6e3'
-    CLIENT_SECRET = '7555b89676e34ac69a1c32c49b3dfef6'
+    CLIENT_ID = os.environ.get("CLIENT_ID")
+    CLIENT_SECRET = os.environ.get("CLIENT_SECRET")
     CALLBACK_URL = "http://localhost:5000/auth"
     SCOPE = "user-read-email user-read-private"
     BASE_URL = "https://api.spotify.com/v1/"
@@ -81,7 +81,7 @@ class SpotifyAuth(object):
 
 
     def refreshAuth(self, session_id):
-        refresh_token = get_user_tokens(session_id).refresh_token
+        refresh_token = self.get_user_tokens(session_id).refresh_token
         response = post(self.SPOTIFY_URL_TOKEN, data={
         'grant_type': 'refresh_token',
         'refresh_token': refresh_token,
@@ -131,8 +131,3 @@ class SpotifyAuth(object):
     
     def get_new_releases(self, session_id, offset=0, limit=50):
         return self.execute_spotify_api_call(session_id, f"browse/new-releases?&offset={offset}&limit={limit}")
-    def get_artist_new_releases(self, session_id, id1):
-        return self.execute_spotify_api_call(session_id, "artists/"+id1)
-    def get_artists_new_releases_batch(self, session_id, ids):
-        id1 = ",".join(ids)
-        return self.execute_spotify_api_call(session_id, "artists/?ids="+id1)
